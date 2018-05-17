@@ -6,8 +6,7 @@ const categories = [
       {
         id: "shape-finish",
         label: "Shape & Finish",
-        helpText:
-          "How glossy, symmetrical and crescent moon-shaped the croissant is",
+        helpText: "Is it glossy and symmetrical?",
       },
       {
         id: "lamination",
@@ -66,7 +65,7 @@ const categories = [
     items: [
       {
         id: "vfm",
-        label: "Value for money",
+        label: "How much would you pay for this? (kr.)",
       },
     ],
   },

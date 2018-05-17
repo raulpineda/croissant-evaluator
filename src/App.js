@@ -2,7 +2,16 @@ import React, { Component, Fragment } from "react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import AppBar from "material-ui/AppBar";
 import Content from "./Content";
+import firebase from "./firebase";
 import "./App.css";
+
+// Create anonymous Firebase user
+firebase.auth().signInAnonymously();
+window.fb = firebase;
+
+// Initialize Firestore
+const db = firebase.firestore();
+db.settings({ timestampsInSnapshots: true });
 
 class App extends Component {
   constructor() {
@@ -13,28 +22,31 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // TODO: Initialize Firebase
-    const croissants = [
-      { id: 1, label: "🥐1", price: 1.0, pictureUrl: null },
-      { id: 2, label: "🥐2", price: 2.0, pictureUrl: null },
-      { id: 3, label: "🥐3", price: 3.0, pictureUrl: null },
-      { id: 4, label: "🥐4", price: 4.0, pictureUrl: null },
-      { id: 5, label: "🥐5", price: 5.0, pictureUrl: null },
-      { id: 6, label: "🥐6", price: 6.0, pictureUrl: null },
-      { id: 7, label: "🥐7", price: 7.0, pictureUrl: null },
-      { id: 8, label: "🥐8", price: 8.0, pictureUrl: null },
-    ];
-    this.setState({
-      croissants: croissants,
-    });
+    db
+      .collection("croissants")
+      .orderBy("index")
+      .get()
+      .then(snapshot => {
+        const croissants = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            label: data.label,
+            pictureUrl: data.pictureUrl,
+          };
+        });
+        this.setState({
+          croissants: croissants,
+        });
+      });
   }
 
   render() {
     return (
       <MuiThemeProvider>
         <Fragment>
-          <AppBar title="🥐 Croissant Evaluation" />
-          <Content croissants={this.state.croissants} />
+          <AppBar title="👍 Rate My Croissant 👎" />
+          <Content croissants={this.state.croissants} db={db} />
         </Fragment>
       </MuiThemeProvider>
     );
